@@ -2,16 +2,13 @@
  * main.c
  *
  *  Created on: 28 Apr 2023
- *      Author: 20109
+ *      Author: TaqiEldeen
  */
 
 
 /*			LIB Inclusion			*/
 #include "STD_TYPES.h"
 #include "BIT_MATH.h"
-
-/*			HAL Inclusion			*/
-#include "HC_int.h"
 
 /*			MCAL Inclusion			*/
 #include "RCC_int.h"
@@ -22,12 +19,16 @@
 #include "SYSTICK_int.h"
 #include "UART_int.h"
 
+/*			HAL Inclusion			*/
+#include "HC_int.h"
+
+
 void HC_vHandler( u16 A_u16Data );
 void ESP_vHandler( u16 A_u16Data );
 static void delay();
 volatile u8 str[50];
 
-static volatile u32 G_u32Timeout = 0;
+static volatile u8 G_u8StartFlag = 0;	/* For indicating a new device has started */
 
 void main(void) {
 	/* Init System Clock:
@@ -43,7 +44,7 @@ void main(void) {
 	RCC_vEnableClk( RCC_APB2, USART1 );		/* Enable USART1 CLK */
 	RCC_vEnableClk( RCC_APB1, USART2 );		/* Enable USART2 CLK */
 
-	NVIC_vEnableInterrupt( NVIC_USART1 );	/* Enable USART1 Interrupt */
+	
 
 	DIO_vSetPinMode( PORTA_ID, PIN0_ID, OUTPUT_2MHZ_PP );	/* For LED */
 
@@ -54,6 +55,9 @@ void main(void) {
 	//HC_vSendDataAsync()
 
 	HC_u8ReceiveDataAsync( HC_vHandler );	/* USART1 Callback */
+
+	NVIC_vEnableInterrupt( NVIC_USART1 );	/* Enable USART1 Interrupt */
+
 	UART_vSetCallBack( ESP_vHandler, UART2_ID );
 
 	while (1) {
@@ -89,6 +93,4 @@ void HC_vHandler( u16 A_u16Data ) {
 
 		DIO_vTogPinVal( PORTA_ID, PIN0_ID );	/* Indication: Not Yet Flashed */
 	}
-	/* Reset timeout */
-	G_u32Timeout = 0;
 }

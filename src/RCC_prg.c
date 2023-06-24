@@ -118,7 +118,8 @@ static void RCC_vInitPLL(){
 		#endif
 
 		/* Selecting PLL Multiplier */
-		RCC_CFGR = (RCC_CFGR & PLL_MUL_MASK) | (PLLMUL << PLL_MUL_SELECT);
+		RCC_CFGR = (RCC_CFGR & PLL_MUL_MASK)
+				| (PLLMUL << PLL_MUL_SELECT);
 
 		/* Selecting HSE divider */
 		#if PLL_HSE_DIV == PLL_HSE_NOT_DIV

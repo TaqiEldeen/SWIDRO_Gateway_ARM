@@ -74,7 +74,7 @@ void UART_vInit(void){
     #if UART2_STATE == UART_STATE_ENABLED
 
         DIO_vSetPinMode(PORTA_ID, PIN2_ID, OUTPUT_10MHZ_AFPP);	// TX pin
-        DIO_vSetPinMode(PORTA_ID, PIN3_ID, INPUT_PULLUP);	// RX pin
+        DIO_vSetPinMode(PORTA_ID, PIN3_ID, INPUT_FLOATING);	// RX pin
 
         SET_BIT(USART2->CR1, UE); // Enable USART2
         SET_BIT(USART2->CR1, TE); // Enable TX
@@ -97,7 +97,7 @@ void UART_vInit(void){
         #endif /* UART_STOP_BIT == UART_STOP_BIT_2 */
 
         #if UART_READ_REGISTER_NOT_EMPTY_INTERRUPT_ENABLE == 1
-            SET_BIT(USART2->CR1, RXNEIE);
+            //SET_BIT(USART2->CR1, RXNEIE);
         #endif /* UART_READ_REGISTER_NOT_EMPTY_INTERRUPT_ENABLE == 1 */
 
         L_u16Mantissa = (u16)UART2_BAUD_RATE;

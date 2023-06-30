@@ -18,6 +18,6 @@
  * 4- NVIC_PRIORITY_GROUPING_3      (One bit for group priority and three bits for subpriority)
  * 5- NVIC_PRIORITY_GROUPING_4      (Zero bits for group priority and four bits for subpriority)
  */
-#define NVIC_PRIORITY_GROUPING  NVIC_PRIORITY_GROUPING_4
+#define NVIC_PRIORITY_GROUPING  NVIC_PRIORITY_GROUPING_0
 
 #endif  /* NVIC_CFG_H_ */

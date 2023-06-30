@@ -11,7 +11,7 @@
 /* BaseAddress:	0x40021000 */ 
 
 /*	Clock control register	*/
-#define RCC_CR			*((u32*) 0x40021000)
+#define RCC_CR			*((volatile u32*) 0x40021000)
 /*  Bits:
 *   Notes: Bits 2 and 26 to 31 are reserved
 */
@@ -27,7 +27,7 @@
 #define PLLRDY			25
 
 /*	Clock configuration register	*/
-#define RCC_CFGR		*((u32*) 0x40021004)
+#define RCC_CFGR		*((volatile u32*) 0x40021004)
 /*  Bits:
 *   Notes: Bits 2 and 26 to 31 are reserved
 */
@@ -45,7 +45,7 @@
 
 
 /*	Clock interrupt register	*/
-#define RCC_CIR			*((u32*) 0x40021008)
+#define RCC_CIR			*((volatile u32*) 0x40021008)
 /* Bits:    */
 #define LSIRDYF			0
 #define LSERDYF			1
@@ -67,7 +67,7 @@
 
 
 /*	APB2 peripheral reset register	*/
-#define RCC_APB2RSTR	*((u32*) 0x4002100C)
+#define RCC_APB2RSTR	*((volatile u32*) 0x4002100C)
 /* Bits:    */
 #define AFIO			0
 #define IOPA			2
@@ -90,7 +90,7 @@
 
 
 /*	APB1 peripheral reset register	*/
-#define RCC_APB1RSTR	*((u32*) 0x40021010)
+#define RCC_APB1RSTR	*((volatile u32*) 0x40021010)
 /* Bits:    */
 #define TIM2			0
 #define TIM3			1
@@ -118,7 +118,7 @@
 
 
 /*	AHB peripheral clock enable register	*/
-#define RCC_AHBENR		*((u32*) 0x40021014)
+#define RCC_AHBENR		*((volatile u32*) 0x40021014)
 /* Bits:    */
 #define DMA1			0
 #define DMA2			1
@@ -130,7 +130,7 @@
 
 
 /*	APB2 peripheral clock enable register	*/
-#define RCC_APB2ENR		*((u32*) 0x40021018)
+#define RCC_APB2ENR		*((volatile u32*) 0x40021018)
 /* Bits:    */
 #define AFIO			0
 #define IOPA			2
@@ -153,7 +153,7 @@
 
 
 /*	APB1 peripheral clock enable register	*/
-#define RCC_APB1ENR		*((u32*) 0x4002101C)
+#define RCC_APB1ENR		*((volatile u32*) 0x4002101C)
 /* Bits:    */
 #define TIM2			0
 #define TIM3			1
@@ -180,7 +180,7 @@
 #define DAC				29
 
 /*	Backup domain control register	*/
-#define RCC_BDCR		*((u32*) 0x40021020)
+#define RCC_BDCR		*(volatile (u32*) 0x40021020)
 /* Bits:    */
 #define LSEON			0
 #define LSERDY			1
@@ -191,7 +191,7 @@
 
 
 /*	Control/status register	*/
-#define RCC_CSR			*((u32*) 0x40021024)
+#define RCC_CSR			*(volatile (u32*) 0x40021024)
 /* Bits:    */
 #define LSION			0
 #define LSIRDY			1
@@ -201,5 +201,15 @@
 #define SFTRSTF		    28
 #define IWDGRSTF	    29
 #define WWDGRSTF		30
+
+#define FLASH_ACR		*((volatile u32*) 0x40022000)
+/*Bits :*/
+#define LATENCY 0
+
+
+/* MODES FOR LATENCY */
+#define TWO_WAIT_STATES		0b010
+#define ONE_WAIT_STATES		0b001
+#define ZERO_WAIT_STATES	0b000
 
 #endif

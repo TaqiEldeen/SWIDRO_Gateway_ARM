@@ -20,14 +20,16 @@
  * Inputs      : A_u8BusId -> Bus ID (AHB, APB1, APB2), A_u8PerId -> Peripheral ID
  ***********************************************************************************************************/
 void RCC_vInitSysClk( void ) {
-	/* Reset registers */
-	RCC_CFGR = 0x00000000;
-	RCC_CR = 0x00000080;	/* Default trimming is preserved */
+	RCC_CR   = 0x00000083;	/* Enable HSI */
 
-	/* Init prescaler for APB1, APB2 and AHB */
-	RCC_CFGR |= (   (PPRE2 << APB2_PRESCALLER) 
-				  | (PPRE1 << APB1_PRESCALLER)
-				  | (HPRE  << AHB_PRESCALLER) 
+	RCC_CFGR = 0x00000000;	/* Use HSI */
+
+	RCC_CR  &= ~((1<<PLLON) | (1<<HSEON) | (1<<CSSON));
+
+	/* Apply busses prescaler */
+	RCC_CFGR |= (   (APB2_PRESCALLER << PPRE2)
+				  | (APB1_PRESCALLER << PPRE1)
+				  | (AHB_PRESCALLER  << HPRE)
 				);
 
 	/*	Select system clock source	*/
@@ -40,6 +42,7 @@ void RCC_vInitSysClk( void ) {
 	#else
 		#error "Wrong system clock selection!"
 	#endif
+
 }
 
 /**********************************************************************************************************
@@ -89,6 +92,10 @@ static void RCC_vInitHSE(){
  * Inputs      : VOID
  ***********************************************************************************************************/
 static void RCC_vInitPLL(){
+
+	RCC_CFGR &= PLL_MUL_MASK ;
+	RCC_CFGR |= (PLL_MUL_SELECT << PLLMUL);
+
 	#if PLL_SRC_SELECT == HSI_DIV_2_PLL
 		/*	Enable HSI	*/
 		SET_BIT(RCC_CR, HSION);
@@ -99,12 +106,8 @@ static void RCC_vInitPLL(){
 		/*	Select HSI/2 as PLL entry clock source	*/
 		CLR_BIT(RCC_CFGR, PLLSRC);
 		CLR_BIT(RCC_CFGR, PLLXTPRE);
-	#elif PLL_SRC_SELECT == HSE_PLL
-		/*	Enable HSE	*/
-		SET_BIT(RCC_CR, HSEON);
 
-		/*	Wait till HSE is ready	*/
-		while( GET_BIT(RCC_CR, HSERDY) == 0 );
+	#elif PLL_SRC_SELECT == HSE_PLL
 
 		/* Selecting HSE type */
 		#if PLL_HSE_SRC_SELECT == HSE_CRYSTAL_SELECT
@@ -117,15 +120,18 @@ static void RCC_vInitPLL(){
 			#error "Wrong HSE clock source selection!"
 		#endif
 
-		/* Selecting PLL Multiplier */
-		RCC_CFGR = (RCC_CFGR & PLL_MUL_MASK)
-				| (PLLMUL << PLL_MUL_SELECT);
+		/*	Enable HSE	*/
+		SET_BIT(RCC_CR, HSEON);
+
+		/* Wait for HSE to be RDY */
+		while( GET_BIT(RCC_CR, HSERDY) == 0 );
 
 		/* Selecting HSE divider */
 		#if PLL_HSE_DIV == PLL_HSE_NOT_DIV
 			/*	Select HSE as PLL entry clock source	*/
-			CLR_BIT(RCC_CFGR, PLLXTPRE);			
+			CLR_BIT(RCC_CFGR, PLLXTPRE);
 			SET_BIT(RCC_CFGR, PLLSRC);
+
 		#elif PLL_HSE_DIV == PLL_HSE_DIV_2
 			/*	Select HSE/2 as PLL entry clock source	*/
 			SET_BIT(RCC_CFGR, PLLXTPRE);
@@ -133,19 +139,19 @@ static void RCC_vInitPLL(){
 		#else
 			#error "Wrong PLL entry clock source selection!"
 		#endif
-
+		
 	#else
 		#error "Wrong PLL entry clock source selection!"
 	#endif
+
 	/*	Enable PLL	*/
 	SET_BIT(RCC_CR, PLLON);
 
 	/*	Wait till PLL is ready	*/
 	while( GET_BIT(RCC_CR, PLLRDY) == 0 );
-	
+
 	/*	Select PLL as system clock	*/
-	SET_BIT(RCC_CFGR, SW0);
-	SET_BIT(RCC_CFGR, SW1);
+	RCC_CFGR |=  ( 1 << SW1) ;
 }
 
 

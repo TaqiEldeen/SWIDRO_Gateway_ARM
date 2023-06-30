@@ -65,6 +65,17 @@ void SYSTICK_vSetReload(u32 A_u32Ticks){
     SYSTICK-> LOAD = A_u32Ticks;
 }
 
+
+/**
+ * @brief Interface function to reset the systick
+ * 
+ * @note Resets the value of the VAL register
+ * 
+ */
+void SYSTICK_vReset(){
+    SYSTICK -> VAL = 0; 
+}
+
 /**
  * @brief Interface Function to Get the Elapsed Ticks
  * 

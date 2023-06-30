@@ -11,8 +11,8 @@
 /**
  * @brief Interface Function to Initialize the SYSTICK
  * 
- * @note This Function Must be called before any other function in this module
- *       Initialize the SYSTICK with the configured values in the configuration file
+ * @note 1- This Function Must be called before any other function in this module
+ *       2- Initialize the SYSTICK with the configured values in the configuration file
  * 
  */
 void SYSTICK_vInit(void);
@@ -80,5 +80,12 @@ void SYSTICK_vSetIntervalPeriodic(u32 A_u32Ticks, ptr_func_t A_ptr_func);
  */
 void SYSTICK_vSetBusyWait(u32 A_u32Ticks);
 
+/**
+ * @brief Interface function to reset the systick
+ * 
+ * @note Resets the value of the VAL register
+ * 
+ */
+void SYSTICK_vReset();
 
 #endif // SYSTICK_INT_H

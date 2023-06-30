@@ -14,7 +14,7 @@
 *   1- SYSTICK_AHB_DIV_8
 *   2- SYSTICK_AHB       
 */
-#define SYSTICK_CLKSOURCE		SYSTICK_AHB
+#define SYSTICK_CLKSOURCE		SYSTICK_AHB_DIV_8
 
 /*
 * Interrupt Enable

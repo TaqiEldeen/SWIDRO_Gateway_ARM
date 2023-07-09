@@ -29,10 +29,16 @@
 /*          STD C LIB 			*/
 #include <string.h>
 
+/*			MACROS			*/
+#define DROWNING_MSG 		"EMRGDROWNING!\n"	/* Emergency message to the application */
+#define EMRG_MSG			'E'					/* Emergency message to the band */
+#define TIMEOUT				16					/* 16 seconds */
+
 
 /*          GLOBAL Variables            */
 
 volatile u8 str[50];						/* Buffer for receving data from HC-12 */
+volatile u8 espStr[50];						/* Buffer for receving data from ESP-01 */
 static volatile u8 G_u8StartFlag = 0;		/* For indicating a new device has started */
 static const u8 G_u8StartFrame[] = "START";	/* Each band must first send start frame */
 static u8 G_u8Counter = 0;					/* To count the needed timeout */
@@ -77,7 +83,7 @@ void GTW_vUpdate(){
 	if( !G_u8StartFlag ) {
 		if(strncmp(G_u8StartFrame, str, 5) == 0){
 			G_u8StartFlag = 1 ;	/* The device is operating! */
-			SYSTICK_vSetIntervalPeriodic( 8000000, GTW_vHandleTimeout );	/* 2 seconds */
+			SYSTICK_vSetIntervalPeriodic( 4000000, GTW_vHandleTimeout );	/* 1 second */
 			SYSTICK_vTurnOn();
 			DIO_vSetPinVal( PORTA_ID, PIN0_ID, VAL_HIGH );
 		} else {
@@ -105,6 +111,17 @@ static void GTW_vInitSysClk(){
 
 static void GTW_vEspHandler( u16 A_u16Data ) {
 	/* Check status from the application */
+	// static u8 counter = 0;
+
+	// if(A_u16Data != '$') {
+	// 	espStr[counter] = (u8) A_u16Data;
+	// 	counter++;
+	// } else {
+
+	// 	espStr[counter] = '\0';				/* Terminating char for string */
+	// 	HC_vSendData(espStr);				/* Send the recieved data to HC-12*/
+	// 	counter = 0;						/* Reset the index */
+	// }
 }
 
 static void GTW_vHcHandler( u16 A_u16Data ) {
@@ -136,13 +153,14 @@ static void GTW_vSetLedIndication() {
 static void GTW_vHandleTimeout(){
 	G_u8Counter++;
 
-	if(G_u8Counter >= 8) {	/* 16 seconds */
+	if(G_u8Counter >= TIMEOUT) {		
 		/* Emergency!! */
-		HC_vSendData('E');							/* To the band if possible */
-		UART_vSendString("DROWNING!\n", UART2_ID);	/* To the application. TODO: Make ESP HAL driver */
+		HC_vSendData( EMRG_MSG );					/* To the band if possible */
+		UART_vSendString(DROWNING_MSG, UART2_ID);	/* To the application. TODO: Make ESP HAL driver */
 		G_u8Counter--;								/* Just to make sure it wont overflow*/
 		DIO_vTogPinVal( PORTA_ID, PIN0_ID );		/* Emergency LED */
 	} else {
 		DIO_vSetPinVal( PORTA_ID, PIN0_ID, VAL_LOW );		/* Emergency LED */
+		HC_vSendData( 'N' );								/* Refresh band timeout */
 	}
 }
